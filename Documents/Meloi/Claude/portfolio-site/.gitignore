@@ -15,3 +15,4 @@ dist/
 .idea/
 
 next-env.d.ts
+.superpowers/
