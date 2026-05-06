@@ -10,7 +10,7 @@ import { siteConfig } from "@/content/site";
 export const metadata: Metadata = {
   title: `Work — ${siteConfig.name}`,
   description:
-    "Selected freelance and personal projects — websites and web apps built with modern tooling.",
+    "Selected client and personal projects — websites and web apps built with modern tooling.",
 };
 
 export default function WorkPage() {
@@ -19,7 +19,7 @@ export default function WorkPage() {
       <PageHeader
         eyebrow="Work"
         title="Selected projects."
-        description="A handful of recent and past projects. Each one is a chance to work on something genuinely interesting."
+        description="A handful of projects — each one a chance to solve a real problem with clean code."
       />
 
       <section className="py-20 md:py-28">
@@ -31,14 +31,14 @@ export default function WorkPage() {
                 href={`/work/${project.slug}`}
                 className="group block"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-100 ring-1 ring-neutral-200 transition-all group-hover:ring-neutral-300">
-                  <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-wider text-neutral-400">
-                    Screenshot placeholder
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-800 ring-1 ring-slate-700 transition-all group-hover:ring-violet-500/50">
+                  <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-wider text-slate-600">
+                    {project.title}
                   </div>
                 </div>
                 <div className="mt-5 flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-3 text-xs text-neutral-500">
+                    <div className="mb-1 flex items-center gap-2 text-xs text-slate-500">
                       <span>{project.year}</span>
                       {project.client && (
                         <>
@@ -47,17 +47,29 @@ export default function WorkPage() {
                         </>
                       )}
                     </div>
-                    <h2 className="mt-2 text-xl font-semibold text-neutral-900">
-                      {project.title}
-                    </h2>
-                    <p className="mt-1 max-w-md text-sm text-neutral-600">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl font-semibold text-slate-50">
+                        {project.title}
+                      </h2>
+                      {project.projectType === "client" && (
+                        <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-xs font-medium text-violet-400 ring-1 ring-violet-500/30">
+                          Client
+                        </span>
+                      )}
+                      {project.projectType === "practice" && (
+                        <span className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-400 ring-1 ring-slate-600">
+                          Practice
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 max-w-md text-sm text-slate-400">
                       {project.summary}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {project.stack.map((tech) => (
                         <span
                           key={tech}
-                          className="rounded-full border border-neutral-200 px-2.5 py-0.5 text-xs text-neutral-600"
+                          className="rounded-full border border-slate-700 px-2.5 py-0.5 text-xs text-slate-500"
                         >
                           {tech}
                         </span>
@@ -66,7 +78,7 @@ export default function WorkPage() {
                   </div>
                   <ArrowUpRight
                     size={18}
-                    className="mt-1 shrink-0 text-neutral-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-neutral-900"
+                    className="mt-1 shrink-0 text-slate-600 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-violet-400"
                   />
                 </div>
               </Link>

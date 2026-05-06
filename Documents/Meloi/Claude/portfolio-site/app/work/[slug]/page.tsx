@@ -41,18 +41,17 @@ export default async function CaseStudyPage({
 
   return (
     <>
-      {/* Header */}
-      <section className="border-b border-neutral-200 py-20 md:py-28">
+      <section className="border-b border-slate-800 py-20 md:py-28">
         <Container>
           <Link
             href="/work"
-            className="mb-10 inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900"
+            className="mb-10 inline-flex items-center gap-2 text-sm text-slate-500 transition-colors hover:text-slate-50"
           >
             <ArrowLeft size={16} />
             All work
           </Link>
 
-          <div className="flex items-center gap-3 text-sm text-neutral-500">
+          <div className="flex items-center gap-3 text-sm text-slate-500">
             <span>{project.year}</span>
             {project.client && (
               <>
@@ -60,76 +59,75 @@ export default async function CaseStudyPage({
                 <span>{project.client}</span>
               </>
             )}
+            {project.projectType === "client" && (
+              <>
+                <span>·</span>
+                <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-xs font-medium text-violet-400 ring-1 ring-violet-500/30">
+                  Client Project
+                </span>
+              </>
+            )}
+            {project.projectType === "practice" && (
+              <>
+                <span>·</span>
+                <span className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-400 ring-1 ring-slate-600">
+                  Practice Project
+                </span>
+              </>
+            )}
           </div>
-          <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl md:leading-[1.1]">
+          <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-50 md:text-5xl md:leading-[1.1]">
             {project.title}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-400">
             {project.summary}
           </p>
         </Container>
       </section>
 
-      {/* Hero image */}
       <section className="py-12 md:py-16">
         <Container>
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-neutral-200">
-            <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-wider text-neutral-400">
-              Hero screenshot placeholder
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-slate-800 ring-1 ring-slate-700">
+            <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-wider text-slate-600">
+              {project.title} — screenshot
             </div>
           </div>
         </Container>
       </section>
 
-      {/* Meta grid */}
       <section className="py-8">
         <Container>
-          <div className="grid gap-8 border-y border-neutral-200 py-8 md:grid-cols-4">
+          <div className="grid gap-8 border-y border-slate-800 py-8 md:grid-cols-4">
             <div>
-              <p className="text-xs uppercase tracking-wider text-neutral-500">
-                Client
-              </p>
-              <p className="mt-2 text-neutral-900">
-                {project.client ?? "—"}
-              </p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">Client</p>
+              <p className="mt-2 text-slate-300">{project.client ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wider text-neutral-500">
-                Role
-              </p>
-              <p className="mt-2 text-neutral-900">{project.role ?? "—"}</p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">Role</p>
+              <p className="mt-2 text-slate-300">{project.role ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wider text-neutral-500">
-                Duration
-              </p>
-              <p className="mt-2 text-neutral-900">
-                {project.duration ?? "—"}
-              </p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">Duration</p>
+              <p className="mt-2 text-slate-300">{project.duration ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wider text-neutral-500">
-                Stack
-              </p>
-              <p className="mt-2 text-neutral-900">
-                {project.stack.join(", ")}
-              </p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">Stack</p>
+              <p className="mt-2 text-slate-300">{project.stack.join(", ")}</p>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* Story sections */}
       {project.story && (
         <section className="py-12 md:py-16">
           <Container>
             <div className="mx-auto max-w-3xl space-y-12">
               {project.story.map((section) => (
                 <div key={section.heading}>
-                  <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 md:text-3xl">
+                  <h2 className="text-2xl font-extrabold tracking-tight text-slate-50 md:text-3xl">
                     {section.heading}
                   </h2>
-                  <p className="mt-4 text-lg leading-relaxed text-neutral-700">
+                  <p className="mt-4 text-lg leading-relaxed text-slate-400">
                     {section.body}
                   </p>
                 </div>
@@ -139,7 +137,6 @@ export default async function CaseStudyPage({
         </section>
       )}
 
-      {/* Live link */}
       {project.liveUrl && (
         <section className="py-12">
           <Container>
@@ -148,7 +145,7 @@ export default async function CaseStudyPage({
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
+                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
               >
                 Visit live site
                 <ArrowUpRight
@@ -161,20 +158,17 @@ export default async function CaseStudyPage({
         </section>
       )}
 
-      {/* Next project */}
-      <section className="border-t border-neutral-200 py-16 md:py-20">
+      <section className="border-t border-slate-800 py-16 md:py-20">
         <Container>
           <Link href={`/work/${nextProject.slug}`} className="group block">
-            <p className="text-xs uppercase tracking-wider text-neutral-500">
-              Next project
-            </p>
+            <p className="text-xs uppercase tracking-wider text-slate-500">Next project</p>
             <div className="mt-3 flex items-center justify-between">
-              <h3 className="text-2xl font-semibold tracking-tight text-neutral-900 md:text-3xl">
+              <h3 className="text-2xl font-extrabold tracking-tight text-slate-50 md:text-3xl">
                 {nextProject.title}
               </h3>
               <ArrowUpRight
                 size={22}
-                className="shrink-0 text-neutral-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-neutral-900"
+                className="shrink-0 text-slate-600 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-violet-400"
               />
             </div>
           </Link>
