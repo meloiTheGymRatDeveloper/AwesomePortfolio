@@ -10,13 +10,9 @@ import { siteConfig } from "@/content/site";
 export const metadata: Metadata = {
   title: `Services — ${siteConfig.name}`,
   description:
-    "Landing pages, full websites, and web applications built with Next.js, React, and Node.js.",
+    "Landing pages, full websites, and web applications. Clear scope, fixed pricing, PHP rates.",
 };
 
-/**
- * Extended service details shown on this page.
- * The short descriptions on the home page live in /content/services.ts.
- */
 const serviceDetails: Record<
   string,
   { timeline: string; deliverables: string[] }
@@ -70,29 +66,24 @@ export default function ServicesPage() {
               return (
                 <article
                   key={service.title}
-                  className="grid gap-8 rounded-2xl border border-neutral-200 p-8 md:grid-cols-[1fr_1.5fr] md:p-12"
+                  className="grid gap-8 rounded-2xl border border-slate-700 bg-slate-800 p-8 md:grid-cols-[1fr_1.5fr] md:p-12"
                 >
                   <div>
-                    <service.Icon
-                      size={28}
-                      className="mb-6 text-neutral-900"
-                    />
-                    <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 md:text-3xl">
+                    <service.Icon size={28} className="mb-6 text-violet-400" />
+                    <h2 className="text-2xl font-extrabold tracking-tight text-slate-50 md:text-3xl">
                       {service.title}
                     </h2>
-                    <p className="mt-3 text-neutral-600">
-                      {service.description}
-                    </p>
+                    <p className="mt-3 text-slate-400">{service.description}</p>
                     <div className="mt-8 space-y-1 text-sm">
-                      <p className="text-neutral-500">Starting at</p>
-                      <p className="text-xl font-semibold text-neutral-900">
+                      <p className="text-slate-500">Starting at</p>
+                      <p className="text-xl font-semibold text-violet-400">
                         {service.startingPrice}
                       </p>
                     </div>
                     {details && (
                       <div className="mt-6 space-y-1 text-sm">
-                        <p className="text-neutral-500">Timeline</p>
-                        <p className="font-medium text-neutral-900">
+                        <p className="text-slate-500">Timeline</p>
+                        <p className="font-medium text-slate-300">
                           {details.timeline}
                         </p>
                       </div>
@@ -100,32 +91,28 @@ export default function ServicesPage() {
                   </div>
 
                   <div>
-                    <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-900">
+                    <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-50">
                       What&apos;s included
                     </h3>
-                    {details ? (
+                    {details && (
                       <ul className="space-y-3">
                         {details.deliverables.map((item) => (
                           <li
                             key={item}
-                            className="flex items-start gap-3 text-neutral-700"
+                            className="flex items-start gap-3 text-slate-400"
                           >
                             <Check
                               size={18}
-                              className="mt-0.5 shrink-0 text-neutral-900"
+                              className="mt-0.5 shrink-0 text-violet-400"
                             />
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
-                    ) : (
-                      <p className="text-sm text-neutral-500">
-                        [Deliverables list placeholder]
-                      </p>
                     )}
                     <Link
                       href="/contact"
-                      className="mt-8 inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:border-neutral-900"
+                      className="mt-8 inline-flex items-center rounded-full border border-slate-600 px-5 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:border-violet-500 hover:text-slate-50"
                     >
                       Request a quote
                     </Link>
@@ -135,12 +122,12 @@ export default function ServicesPage() {
             })}
           </div>
 
-          <p className="mt-16 max-w-xl text-sm text-neutral-500">
+          <p className="mt-16 max-w-xl text-sm text-slate-500">
             Need something that doesn&apos;t fit these packages? I also take on
             custom projects and short engagements.{" "}
             <Link
               href="/contact"
-              className="font-medium text-neutral-900 underline-offset-4 hover:underline"
+              className="font-medium text-slate-300 underline-offset-4 hover:underline"
             >
               Tell me about it →
             </Link>

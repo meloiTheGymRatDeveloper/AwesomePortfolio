@@ -9,7 +9,7 @@ import { siteConfig } from "@/content/site";
 export const metadata: Metadata = {
   title: `Contact — ${siteConfig.name}`,
   description:
-    "Get in touch to discuss a project, ask a question, or just say hi.",
+    "Got a project in mind? Get in touch — I read every message and reply within one business day.",
 };
 
 export default function ContactPage() {
@@ -17,8 +17,8 @@ export default function ContactPage() {
     <>
       <PageHeader
         eyebrow="Contact"
-        title="Let's talk about your project."
-        description="Tell me a bit about what you're building and I'll reply within one business day. No obligation — just a conversation."
+        title="Got a project in mind?"
+        description="Tell me about it — I read every message. No obligation, just a conversation about what you're building."
       />
 
       <section className="py-20 md:py-28">
@@ -30,69 +30,63 @@ export default function ContactPage() {
 
             <aside className="space-y-10">
               <div>
-                <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider text-neutral-900">
+                <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-50">
                   Other ways to reach me
                 </h3>
-                <ul className="space-y-4 text-neutral-700">
+                <ul className="space-y-4 text-slate-400">
                   <li className="flex items-start gap-3">
-                    <Mail
-                      size={18}
-                      className="mt-0.5 shrink-0 text-neutral-400"
-                    />
+                    <Mail size={18} className="mt-0.5 shrink-0 text-slate-600" />
                     <Link
                       href={`mailto:${siteConfig.email}`}
-                      className="hover:text-neutral-900"
+                      className="hover:text-slate-50"
                     >
                       {siteConfig.email}
                     </Link>
                   </li>
                   <li className="flex items-start gap-3">
-                    <Github
-                      size={18}
-                      className="mt-0.5 shrink-0 text-neutral-400"
-                    />
+                    <Github size={18} className="mt-0.5 shrink-0 text-slate-600" />
                     <Link
                       href={siteConfig.socials.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-neutral-900"
+                      className="hover:text-slate-50"
                     >
                       GitHub
                     </Link>
                   </li>
                   <li className="flex items-start gap-3">
-                    <Linkedin
-                      size={18}
-                      className="mt-0.5 shrink-0 text-neutral-400"
-                    />
+                    <Linkedin size={18} className="mt-0.5 shrink-0 text-slate-600" />
                     <Link
                       href={siteConfig.socials.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-neutral-900"
+                      className="hover:text-slate-50"
                     >
                       LinkedIn
                     </Link>
                   </li>
                   <li className="flex items-start gap-3">
-                    <MapPin
-                      size={18}
-                      className="mt-0.5 shrink-0 text-neutral-400"
-                    />
+                    <MapPin size={18} className="mt-0.5 shrink-0 text-slate-600" />
                     <span>{siteConfig.location}</span>
                   </li>
                 </ul>
               </div>
 
               <div>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-neutral-900">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-50">
                   Availability
                 </h3>
-                <p className="text-sm text-neutral-600">
-                  {siteConfig.available
-                    ? "Currently taking on part-time projects. Typical turnaround starts 1–2 weeks out."
-                    : "Currently booked. I'll reply to inquiries and can schedule projects for the next open slot."}
-                </p>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-500" />
+                  </span>
+                  <p className="text-sm text-slate-400">
+                    {siteConfig.available
+                      ? "Currently available for new projects."
+                      : "Currently booked. Get in touch for the next open slot."}
+                  </p>
+                </div>
               </div>
             </aside>
           </div>
