@@ -1,10 +1,10 @@
 export const bio = {
   short:
-    "I'm Meloi — a web developer based in the Philippines, building modern websites and web apps for small businesses and startups.",
+    "I'm Meloi — a web developer based in the Philippines, building modern websites for real estate agents and small businesses who are serious about their online presence.",
   long: [
-    "I've been writing code for a few years, focused on the web stack: Next.js, React, Node.js, Express, and MongoDB. I take on part-time freelance projects alongside my main work, which lets me pick clients and problems I actually care about.",
-    "My approach is simple: understand the problem, design the smallest thing that solves it, ship it, then iterate. I care about fast load times, clean code, and clear communication — and I don't disappear between updates.",
-    "When I'm not coding, I'm usually [hobby/interest placeholder — swap this for something personal].",
+    "I'm Meloi — a web developer based in the Philippines. I build fast, modern websites for real estate agents and small businesses who need a professional online presence without the corporate runaround. My clients are people who care deeply about their business and want a developer who does too.",
+    "My approach is simple: understand the problem first, design the smallest thing that solves it, then ship it. I share preview links early and often, communicate through every step, and don't disappear after launch. Every project includes 30 days of post-launch support — no extra charge.",
+    "When I'm not coding, I'm at the gym. Consistency is how I approach both — show up, do the work, get better. It's the same discipline I bring to every project.",
   ],
 };
 
