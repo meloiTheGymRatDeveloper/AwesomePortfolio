@@ -84,10 +84,14 @@ Custom React hooks go here. Import them with `@/hooks/use-whatever`.
 
 Tailwind only — no CSS modules. The `cn()` utility (`lib/utils.ts`) combines `clsx` + `tailwind-merge` and should be used for any conditional or merged class strings. The design uses a neutral palette with `neutral-900` for headings and `neutral-600` for body text.
 
+## Documentation
+
+Use Context7 to check up-to-date docs when needed for implementing new libraries or frameworks, or adding features using them.
+
 ## Environment variables
 
-| Variable | Purpose | Required |
-|---|---|---|
-| `RESEND_API_KEY` | Sends contact form emails via Resend | No (dev falls back to console log) |
-| `CONTACT_EMAIL_TO` | Recipient address for contact emails | No (defaults to `hello@example.com`) |
-| `CONTACT_EMAIL_FROM` | Sender address shown in email | No (defaults to Resend onboarding address) |
+| Variable             | Purpose                              | Required                                   |
+| -------------------- | ------------------------------------ | ------------------------------------------ |
+| `RESEND_API_KEY`     | Sends contact form emails via Resend | No (dev falls back to console log)         |
+| `CONTACT_EMAIL_TO`   | Recipient address for contact emails | No (defaults to `hello@example.com`)       |
+| `CONTACT_EMAIL_FROM` | Sender address shown in email        | No (defaults to Resend onboarding address) |
