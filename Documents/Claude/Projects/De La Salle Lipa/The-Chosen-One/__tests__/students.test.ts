@@ -51,9 +51,9 @@ describe('markStudentCorrect', () => {
 })
 
 describe('resetSection', () => {
-  it('calls sql once with the section id', async () => {
+  it('resolves without throwing and calls sql once', async () => {
     mockSql.mockResolvedValueOnce([] as any)
-    await resetSection('section-1')
+    await expect(resetSection('section-1')).resolves.toBeUndefined()
     expect(mockSql).toHaveBeenCalledOnce()
   })
 })

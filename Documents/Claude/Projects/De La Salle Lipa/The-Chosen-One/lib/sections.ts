@@ -10,6 +10,7 @@ export async function createSection(name: string): Promise<Section> {
   const [row] = await sql`
     INSERT INTO sections (name) VALUES (${name}) RETURNING *
   `
+  if (!row) throw new Error('createSection: INSERT returned no row')
   return row as Section
 }
 

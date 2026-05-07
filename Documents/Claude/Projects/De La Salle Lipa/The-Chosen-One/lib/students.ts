@@ -14,6 +14,7 @@ export async function addStudent(sectionId: string, name: string): Promise<Stude
   const [row] = await sql`
     INSERT INTO students (section_id, name) VALUES (${sectionId}, ${name}) RETURNING *
   `
+  if (!row) throw new Error('addStudent: INSERT returned no row')
   return row as Student
 }
 
@@ -47,5 +48,5 @@ export async function countActiveStudents(sectionId: string): Promise<number> {
     SELECT COUNT(*) as count FROM students
     WHERE section_id = ${sectionId} AND removed = false
   `
-  return Number(rows[0].count)
+  return Number(rows[0]?.count ?? 0)
 }
