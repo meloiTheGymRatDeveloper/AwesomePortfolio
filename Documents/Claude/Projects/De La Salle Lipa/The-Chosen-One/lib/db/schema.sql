@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS sections (
 
 CREATE TABLE IF NOT EXISTS students (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
+  section_id UUID NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
   name       TEXT NOT NULL,
   removed    BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now()
