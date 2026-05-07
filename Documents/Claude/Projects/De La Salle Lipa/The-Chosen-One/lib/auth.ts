@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { SignJWT, jwtVerify, errors } from 'jose'
 import { NextRequest, NextResponse } from 'next/server'
 
 const COOKIE_NAME = 'admin_session'
@@ -21,8 +21,9 @@ export async function verifyToken(token: string): Promise<boolean> {
   try {
     await jwtVerify(token, getSecret())
     return true
-  } catch {
-    return false
+  } catch (e) {
+    if (e instanceof errors.JOSEError) return false
+    throw e
   }
 }
 

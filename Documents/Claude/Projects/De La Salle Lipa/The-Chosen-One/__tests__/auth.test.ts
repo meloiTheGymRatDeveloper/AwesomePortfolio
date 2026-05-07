@@ -11,6 +11,13 @@ describe('signToken', () => {
     expect(typeof token).toBe('string')
     expect(token.split('.').length).toBe(3)
   })
+
+  it('encodes the payload into the token', async () => {
+    const { jwtVerify } = await import('jose')
+    const token = await signToken({ role: 'admin', sub: 'test' })
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET!))
+    expect(payload.role).toBe('admin')
+  })
 })
 
 describe('verifyToken', () => {
@@ -27,5 +34,24 @@ describe('verifyToken', () => {
 
   it('returns false for an empty string', async () => {
     expect(await verifyToken('')).toBe(false)
+  })
+
+  it('returns false for an expired token', async () => {
+    const { SignJWT } = await import('jose')
+    const expired = await new SignJWT({ role: 'admin' })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('-1s')
+      .sign(new TextEncoder().encode(process.env.JWT_SECRET!))
+    expect(await verifyToken(expired)).toBe(false)
+  })
+
+  it('returns false for a token signed with the wrong secret', async () => {
+    const { SignJWT } = await import('jose')
+    const wrongKey = new TextEncoder().encode('a-completely-different-secret-32x')
+    const foreign = await new SignJWT({ role: 'admin' })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .sign(wrongKey)
+    expect(await verifyToken(foreign)).toBe(false)
   })
 })
