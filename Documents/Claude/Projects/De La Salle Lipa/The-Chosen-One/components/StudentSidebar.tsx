@@ -99,6 +99,7 @@ export function StudentSidebar({ students, onAdd, onRemove, onReset, hasActiveSt
         <div className="flex gap-2 items-center justify-center">
           <span className="font-garamond text-xs text-ink-soft/70">Reset all students?</span>
           <button
+            autoFocus
             onClick={() => { onReset(); setConfirmReset(false) }}
             className="font-cinzel text-[9px] text-burgundy hover:underline"
           >
@@ -114,7 +115,7 @@ export function StudentSidebar({ students, onAdd, onRemove, onReset, hasActiveSt
       ) : (
         <button
           onClick={() => setConfirmReset(true)}
-          disabled={!students.length}
+          disabled={!hasActiveStudents}
           className="w-full font-cinzel text-[9px] tracking-[3px] uppercase bg-transparent border border-gold text-gold py-2 rounded-sm hover:bg-gold hover:text-navy transition-all duration-200 disabled:opacity-30"
         >
           <span aria-hidden="true">↺ </span>Reset the Circle
