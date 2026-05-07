@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { Section, Student } from '@/lib/types'
 import { SectionTabs } from '@/components/SectionTabs'
 import { StudentSidebar } from '@/components/StudentSidebar'
@@ -23,10 +23,22 @@ export function AdminDashboard({ initialSections, initialStudents }: AdminDashbo
   const [pickedStudent, setPickedStudent] = useState<Student | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [allSpokenMsg, setAllSpokenMsg] = useState(false)
+  const autoResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (autoResetTimerRef.current) clearTimeout(autoResetTimerRef.current)
+    }
+  }, [])
 
   const activeStudents = students.filter(s => !s.removed)
 
   const switchSection = async (id: string) => {
+    if (autoResetTimerRef.current) {
+      clearTimeout(autoResetTimerRef.current)
+      autoResetTimerRef.current = null
+      setAllSpokenMsg(false)
+    }
     setActiveSectionId(id)
     setPickedStudent(null)
     const res = await fetch(`/api/sections/${id}/students`)
@@ -47,6 +59,7 @@ export function AdminDashboard({ initialSections, initialStudents }: AdminDashbo
   }
 
   const deleteSection = async (id: string) => {
+    if (isSpinning) return
     await fetch(`/api/sections/${id}`, { method: 'DELETE' })
     const next = sections.filter(s => s.id !== id)
     setSections(next)
@@ -64,39 +77,45 @@ export function AdminDashboard({ initialSections, initialStudents }: AdminDashbo
   }
 
   const handleCast = async () => {
-    if (!activeSectionId || activeStudents.length === 0) return
+    if (isSpinning || !activeSectionId || activeStudents.length === 0) return
     setIsSpinning(true)
     setPickedStudent(null)
 
-    const [spinRes] = await Promise.all([
-      fetch(`/api/sections/${activeSectionId}/spin`, { method: 'POST' }).then(r => r.json()),
-      new Promise(resolve => setTimeout(resolve, 4000)),
-    ])
-
-    setIsSpinning(false)
-    setPickedStudent(spinRes)
+    try {
+      const [spinRes] = await Promise.all([
+        fetch(`/api/sections/${activeSectionId}/spin`, { method: 'POST' }).then(r => r.json()),
+        new Promise(resolve => setTimeout(resolve, 4000)),
+      ])
+      setPickedStudent(spinRes)
+    } finally {
+      setIsSpinning(false)
+    }
   }
 
   const handleCorrect = async () => {
     if (!pickedStudent) return
     setActionLoading(true)
-    await fetch(`/api/students/${pickedStudent.id}/correct`, { method: 'PATCH' })
-    const updated = students.map(s =>
-      s.id === pickedStudent.id ? { ...s, removed: true } : s
-    )
-    setStudents(updated)
-    setPickedStudent(null)
-    setActionLoading(false)
+    try {
+      await fetch(`/api/students/${pickedStudent.id}/correct`, { method: 'PATCH' })
+      const updated = students.map(s =>
+        s.id === pickedStudent.id ? { ...s, removed: true } : s
+      )
+      setStudents(updated)
+      setPickedStudent(null)
 
-    // Auto-reset if pool is now empty
-    const stillActive = updated.filter(s => !s.removed).length
-    if (stillActive === 0 && activeSectionId) {
-      setAllSpokenMsg(true)
-      setTimeout(async () => {
-        await fetch(`/api/sections/${activeSectionId}/reset`, { method: 'POST' })
-        setStudents(prev => prev.map(s => ({ ...s, removed: false })))
-        setAllSpokenMsg(false)
-      }, 2500)
+      // Auto-reset if pool is now empty
+      const stillActive = updated.filter(s => !s.removed).length
+      if (stillActive === 0 && activeSectionId) {
+        setAllSpokenMsg(true)
+        autoResetTimerRef.current = setTimeout(async () => {
+          await fetch(`/api/sections/${activeSectionId}/reset`, { method: 'POST' })
+          setStudents(prev => prev.map(s => ({ ...s, removed: false })))
+          setAllSpokenMsg(false)
+          autoResetTimerRef.current = null
+        }, 2500)
+      }
+    } finally {
+      setActionLoading(false)
     }
   }
 
