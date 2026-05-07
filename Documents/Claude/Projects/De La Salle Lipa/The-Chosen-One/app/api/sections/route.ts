@@ -11,8 +11,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const unauth = await requireAuth(request)
   if (unauth) return unauth
-  const { name } = await request.json()
-  if (!name?.trim()) {
+  let body: Record<string, unknown>
+  try {
+    body = await request.json() as Record<string, unknown>
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+  const name = body.name
+  if (!name || typeof name !== 'string' || !name.trim()) {
     return NextResponse.json({ error: 'Name is required' }, { status: 400 })
   }
   const section = await createSection(name.trim())

@@ -19,8 +19,14 @@ export async function POST(
   const unauth = await requireAuth(request)
   if (unauth) return unauth
   const { id } = await params
-  const { name } = await request.json()
-  if (!name?.trim()) {
+  let body: Record<string, unknown>
+  try {
+    body = await request.json() as Record<string, unknown>
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+  const name = body.name
+  if (!name || typeof name !== 'string' || !name.trim()) {
     return NextResponse.json({ error: 'Name is required' }, { status: 400 })
   }
   const student = await addStudent(id, name.trim())
