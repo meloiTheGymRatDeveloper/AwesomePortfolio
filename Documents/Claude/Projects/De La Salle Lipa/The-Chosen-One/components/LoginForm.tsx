@@ -14,16 +14,22 @@ export function LoginForm() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
-    })
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
 
-    if (res.ok) {
-      router.push('/admin')
-    } else {
-      setError('The grimoire does not recognize you.')
+      if (res.ok) {
+        router.push('/admin')
+      } else {
+        setPassword('')
+        setError('The grimoire does not recognize you.')
+        setLoading(false)
+      }
+    } catch {
+      setError('A spell failure occurred. Please try again.')
       setLoading(false)
     }
   }
@@ -43,11 +49,14 @@ export function LoginForm() {
 
         <GrimoireCard className="p-8">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <label htmlFor="admin-password" className="sr-only">Password</label>
             <input
+              id="admin-password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Incantation…"
+              autoComplete="current-password"
               className="font-garamond text-base bg-white/40 border border-gold/40 rounded-sm px-3 py-2.5 text-ink placeholder-[#9a8070] placeholder:italic outline-none focus:border-gold focus:bg-white/70 transition-colors"
               autoFocus
             />

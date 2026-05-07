@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { ANIME_NAMES } from '@/lib/anime-names'
 import { SpinWheel } from '@/components/SpinWheel'
 import { RevealCard } from '@/components/RevealCard'
@@ -10,21 +10,18 @@ export function PublicWheel() {
   const [remaining, setRemaining] = useState<string[]>([...ANIME_NAMES])
   const [isSpinning, setIsSpinning] = useState(false)
   const [pickedName, setPickedName] = useState<string | null>(null)
-  const pickedRef = useRef<string | null>(null)
 
   const handleCast = () => {
     if (remaining.length === 0) return
     setIsSpinning(true)
     setPickedName(null)
 
-    const pool = remaining.length > 0 ? remaining : [...ANIME_NAMES]
-    const idx = Math.floor(Math.random() * pool.length)
-    const name = pool[idx]
-    pickedRef.current = name
+    const idx = Math.floor(Math.random() * remaining.length)
+    const name = remaining[idx]
 
     setTimeout(() => {
       setIsSpinning(false)
-      setPickedName(pickedRef.current)
+      setPickedName(name)
     }, 4000)
   }
 
@@ -73,7 +70,7 @@ export function PublicWheel() {
             />
           )}
 
-          <p className="font-garamond italic text-sm text-ink-soft/60 mt-2">
+          <p aria-live="polite" className="font-garamond italic text-sm text-ink-soft/60 mt-2">
             {remaining.length} of {ANIME_NAMES.length} apprentices remaining
           </p>
         </div>
