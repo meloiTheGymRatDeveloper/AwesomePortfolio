@@ -32,7 +32,7 @@ export function SpinWheel({ isSpinning, disabled, onCast }: SpinWheelProps) {
         />
 
         {/* Hub */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
           <div className="w-12 h-12 bg-parchment rounded-full border-2 border-gold flex items-center justify-center text-xl shadow-[0_2px_12px_rgba(200,169,107,0.27)]">
             🎩
           </div>
@@ -58,7 +58,7 @@ export function SpinWheel({ isSpinning, disabled, onCast }: SpinWheelProps) {
         disabled={disabled || isSpinning}
         className="font-cinzel text-xs font-semibold tracking-[4px] uppercase text-parchment bg-navy border border-gold px-8 py-3 rounded-sm transition-all duration-300 shadow-[0_2px_16px_rgba(36,50,74,0.2)] hover:shadow-[0_4px_24px_rgba(200,169,107,0.27)] hover:bg-[#1a273a] disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        ✦ &nbsp;Cast the Spell&nbsp; ✦
+        <span aria-hidden="true">✦ </span>Cast the Spell<span aria-hidden="true"> ✦</span>
       </button>
     </div>
   )

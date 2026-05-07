@@ -28,8 +28,8 @@ export function RevealCard({ name, onCorrect, onSkip, isLoading }: RevealCardPro
         <p className="font-cinzel text-[9px] tracking-[5px] uppercase text-gold/70 mb-1">
           The Fates Have Spoken
         </p>
-        <p className="font-cormorant italic text-2xl font-light text-[#f5ead8] tracking-wide">
-          ✦ &nbsp;{name}&nbsp; ✦
+        <p aria-live="polite" className="font-cormorant italic text-2xl font-light text-[#f5ead8] tracking-wide">
+          <span aria-hidden="true">✦ </span>{name}<span aria-hidden="true"> ✦</span>
         </p>
       </div>
 
@@ -40,14 +40,14 @@ export function RevealCard({ name, onCorrect, onSkip, isLoading }: RevealCardPro
           disabled={isLoading}
           className="font-cinzel text-[10px] tracking-[2px] uppercase border border-moss text-moss px-5 py-2 rounded-sm transition-all duration-200 hover:bg-moss hover:text-parchment disabled:opacity-50"
         >
-          ✓ &nbsp;Answered Correctly
+          <span aria-hidden="true">✓ </span>Answered Correctly
         </button>
         <button
           onClick={onSkip}
           disabled={isLoading}
           className="font-cinzel text-[10px] tracking-[2px] uppercase border border-burgundy text-burgundy px-5 py-2 rounded-sm transition-all duration-200 hover:bg-burgundy hover:text-parchment disabled:opacity-50"
         >
-          ↩ &nbsp;Skip
+          <span aria-hidden="true">↩ </span>Skip
         </button>
       </div>
     </div>
