@@ -82,11 +82,13 @@ export function AdminDashboard({ initialSections, initialStudents }: AdminDashbo
     setPickedStudent(null)
 
     try {
-      const [spinRes] = await Promise.all([
-        fetch(`/api/sections/${activeSectionId}/spin`, { method: 'POST' }).then(r => r.json()),
-        new Promise(resolve => setTimeout(resolve, 4000)),
+      const [spinResponse] = await Promise.all([
+        fetch(`/api/sections/${activeSectionId}/spin`, { method: 'POST' }),
+        new Promise<void>(resolve => setTimeout(resolve, 4000)),
       ])
-      setPickedStudent(spinRes)
+      if (spinResponse.ok) {
+        setPickedStudent(await spinResponse.json())
+      }
     } finally {
       setIsSpinning(false)
     }
