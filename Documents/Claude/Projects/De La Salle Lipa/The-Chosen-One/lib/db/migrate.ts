@@ -11,7 +11,7 @@ if (!process.env.DATABASE_URL) {
 const sql = neon(process.env.DATABASE_URL!)
 const schema = readFileSync(join(process.cwd(), 'lib/db/schema.sql'), 'utf-8')
 
-sql(schema).then(() => {
+sql.query(schema).then(() => {
   console.log('✓ Migration complete')
   process.exit(0)
 }).catch((err) => {
