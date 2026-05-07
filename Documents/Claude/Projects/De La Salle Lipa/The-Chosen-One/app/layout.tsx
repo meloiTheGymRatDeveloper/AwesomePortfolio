@@ -14,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen overflow-x-hidden">
         {/* Candlelight glow */}
         <div
+          aria-hidden="true"
           className="fixed bottom-[-100px] left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none z-[1] animate-candle-flicker"
           style={{
             background: 'radial-gradient(ellipse at center bottom, rgba(200,169,107,0.13) 0%, transparent 70%)',

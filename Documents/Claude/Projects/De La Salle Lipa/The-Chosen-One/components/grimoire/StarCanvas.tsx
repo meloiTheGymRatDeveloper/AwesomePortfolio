@@ -10,19 +10,24 @@ export function StarCanvas() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    type Star = { x: number; y: number; r: number; speed: number; phase: number }
+    let stars: Star[] = []
+
+    const makeStars = () =>
+      Array.from({ length: 60 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.3,
+        speed: Math.random() * 0.008 + 0.003,
+        phase: Math.random() * Math.PI * 2,
+      }))
+
     const resize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
+      stars = makeStars()
     }
     resize()
-
-    const stars = Array.from({ length: 60 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.2 + 0.3,
-      speed: Math.random() * 0.008 + 0.003,
-      phase: Math.random() * Math.PI * 2,
-    }))
 
     let animId: number
     const draw = (t: number) => {
@@ -48,6 +53,7 @@ export function StarCanvas() {
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       className="fixed inset-0 pointer-events-none z-[1] opacity-50"
     />
   )

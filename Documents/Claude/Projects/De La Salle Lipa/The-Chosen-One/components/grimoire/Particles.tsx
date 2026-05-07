@@ -10,15 +10,16 @@ const PARTICLES = [
 export function Particles() {
   return (
     <>
-      {PARTICLES.map((p, i) => (
+      {PARTICLES.map((p) => (
         <div
-          key={i}
+          key={p.left}
+          aria-hidden="true"
           className="fixed pointer-events-none z-[1] rounded-full bg-gold animate-float-up"
           style={{
             left: p.left,
             bottom: 0,
-            width: p.size,
-            height: p.size,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
             animationDuration: p.duration,
             animationDelay: p.delay,
           }}
