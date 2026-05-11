@@ -105,6 +105,7 @@ export interface PersonalRecord {
   weight_kg: number;
   reps: number;
   achieved_at: string;
+  muscle_group: 'push' | 'pull' | 'legs' | 'core';
 }
 
 export interface FoodItem {
