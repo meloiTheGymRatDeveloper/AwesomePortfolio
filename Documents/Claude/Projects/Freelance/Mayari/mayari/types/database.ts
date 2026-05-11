@@ -8,6 +8,25 @@ export type MessageRole = 'user' | 'assistant';
 export type MessageType = 'chat' | 'plan_generation' | 'photo_analysis';
 export type BuddyRequestStatus = 'pending' | 'accepted' | 'rejected' | 'blocked';
 
+export interface PlannedExercise {
+  exercise_id: string;
+  exercise_name: string;
+  muscle_group: 'push' | 'pull' | 'legs' | 'core';
+  sets: number;
+  reps_low: number;
+  reps_high: number;
+  rest_seconds: number;
+}
+
+export interface DayPlan {
+  day_label: string;
+  exercises: PlannedExercise[];
+}
+
+export interface PlanData {
+  days: DayPlan[];
+}
+
 export interface UserProfile {
   id: string;
   username: string;
@@ -37,7 +56,7 @@ export interface WorkoutPlan {
   user_id: string;
   split_type: string;
   days_per_week: number;
-  plan_data: Record<string, unknown>;
+  plan_data: PlanData;
   is_active: boolean;
   generated_by: string;
   created_at: string;
