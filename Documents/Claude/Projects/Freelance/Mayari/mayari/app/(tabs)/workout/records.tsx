@@ -4,8 +4,10 @@ import { usePersonalRecords } from '../../../hooks/useWorkout';
 import { colors, typography, spacing } from '../../../constants/theme';
 import type { PersonalRecord } from '../../../types/database';
 
-const GROUP_ORDER: Array<PersonalRecord['muscle_group']> = ['push', 'pull', 'legs', 'core'];
-const GROUP_LABELS: Record<string, string> = {
+type MuscleGroup = PersonalRecord['muscle_group'];
+
+const GROUP_ORDER: MuscleGroup[] = ['push', 'pull', 'legs', 'core'];
+const GROUP_LABELS: Record<MuscleGroup, string> = {
   push: 'Push',
   pull: 'Pull',
   legs: 'Legs',
@@ -13,11 +15,13 @@ const GROUP_LABELS: Record<string, string> = {
 };
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export default function PersonalRecordsScreen() {
-  const { data: prs = [], isLoading } = usePersonalRecords();
+  const { data: prs = [], isLoading, isError } = usePersonalRecords();
 
   const grouped = useMemo(() => {
     const map: Record<string, PersonalRecord[]> = {};
@@ -31,6 +35,15 @@ export default function PersonalRecordsScreen() {
     return (
       <View style={styles.centered}>
         <ActivityIndicator color={colors.brand.primary} />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.emptyTitle}>Hindi ma-load ang records.</Text>
+        <Text style={styles.emptyBody}>Check your connection and try again.</Text>
       </View>
     );
   }
