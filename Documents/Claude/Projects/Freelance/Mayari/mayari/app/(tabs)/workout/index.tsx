@@ -1,15 +1,182 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { colors, typography } from '../../../constants/theme';
+import { useState, useCallback } from 'react';
+import {
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Alert,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { colors, typography, spacing } from '../../../constants/theme';
+import { useActivePlan, useRecentSessions } from '../../../hooks/useWorkout';
+import { useWorkoutStore } from '../../../stores/workoutStore';
+import { useAuthStore } from '../../../stores/authStore';
+import { supabase } from '../../../lib/supabase';
+import { generateWorkoutPlan } from '../../../lib/workoutGenerator';
+import type { DayPlan, WorkoutSession } from '../../../types/database';
 
-export default function WorkoutScreen() {
+function formatDuration(startedAt: string, endedAt: string): string {
+  const mins = Math.round(
+    (new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 60000,
+  );
+  return `${mins}m`;
+}
+
+function SessionCard({ session }: { session: WorkoutSession }) {
+  const dateStr = new Date(session.started_at).toLocaleDateString('en-PH', {
+    month: 'short', day: 'numeric',
+  });
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Wala pang workout ngayon. Magsimula na tayo!</Text>
+    <View style={styles.sessionCard}>
+      <View>
+        <Text style={styles.sessionDate}>{dateStr}</Text>
+        <Text style={styles.sessionVol}>{session.total_volume_kg} kg lifted</Text>
+      </View>
+      <View style={styles.sessionRight}>
+        {session.ended_at && (
+          <Text style={styles.sessionDur}>{formatDuration(session.started_at, session.ended_at)}</Text>
+        )}
+        <Text style={styles.sessionXp}>+{session.xp_earned} XP</Text>
+      </View>
     </View>
   );
 }
 
+export default function WorkoutScreen() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: activePlan, isLoading: planLoading } = useActivePlan();
+  const { data: recentSessions = [] } = useRecentSessions(3);
+  const { startSession } = useWorkoutStore();
+  const userId = useAuthStore(s => s.session?.user.id);
+  const profile = useAuthStore(s => s.profile);
+  const [starting, setStarting] = useState(false);
+  const [generating, setGenerating] = useState(false);
+
+  const todayPlan: DayPlan | null = activePlan
+    ? (activePlan.plan_data.days[recentSessions.length % activePlan.plan_data.days.length] ?? null)
+    : null;
+
+  const handleStart = useCallback(async () => {
+    if (!userId || !todayPlan || !activePlan) return;
+    setStarting(true);
+    try {
+      const { data, error } = await supabase
+        .from('workout_sessions')
+        .insert({
+          user_id: userId,
+          plan_id: activePlan.id,
+          started_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+      if (error || !data) throw new Error(error?.message ?? 'Session create failed');
+      startSession(data.id, activePlan.id, todayPlan);
+      router.push('/(tabs)/workout/active');
+    } catch (e: unknown) {
+      Alert.alert('Error', e instanceof Error ? e.message : 'Could not start workout');
+    } finally {
+      setStarting(false);
+    }
+  }, [userId, todayPlan, activePlan, startSession, router]);
+
+  const handleGenerate = useCallback(async () => {
+    if (!userId || !profile) return;
+    setGenerating(true);
+    try {
+      await generateWorkoutPlan(supabase, userId, profile);
+      await queryClient.invalidateQueries({ queryKey: ['workout_plan'] });
+    } catch (e: unknown) {
+      Alert.alert('Error', e instanceof Error ? e.message : 'Could not generate plan');
+    } finally {
+      setGenerating(false);
+    }
+  }, [userId, profile, queryClient]);
+
+  if (planLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator color={colors.brand.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
+      <Text style={styles.heading}>Workout</Text>
+
+      {todayPlan ? (
+        <View style={styles.planCard}>
+          <Text style={styles.dayLabel}>{todayPlan.day_label}</Text>
+          {todayPlan.exercises.map(ex => (
+            <View key={ex.exercise_id} style={styles.exRow}>
+              <Text style={styles.exName}>{ex.exercise_name}</Text>
+              <Text style={styles.exMeta}>{ex.sets} × {ex.reps_low}–{ex.reps_high}</Text>
+            </View>
+          ))}
+          <TouchableOpacity
+            style={[styles.btn, starting && styles.btnOff]}
+            onPress={handleStart}
+            disabled={starting}
+          >
+            <Text style={styles.btnText}>{starting ? 'Starting...' : 'Start Workout'}</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyTitle}>Wala pang workout plan.</Text>
+          <Text style={styles.emptyBody}>
+            Generate a plan based on your profile to get started.
+          </Text>
+          <TouchableOpacity
+            style={[styles.btn, generating && styles.btnOff]}
+            onPress={handleGenerate}
+            disabled={generating}
+          >
+            <Text style={styles.btnText}>{generating ? 'Generating...' : 'Generate Plan'}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View style={styles.linksRow}>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/workout/records')}>
+          <Text style={styles.link}>Personal Records</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/workout/exercise')}>
+          <Text style={styles.link}>Exercise Library</Text>
+        </TouchableOpacity>
+      </View>
+
+      {recentSessions.length > 0 && (
+        <View>
+          <Text style={styles.sectionTitle}>Recent Sessions</Text>
+          {recentSessions.map(s => <SessionCard key={s.id} session={s} />)}
+        </View>
+      )}
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg.primary, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  text: { color: colors.text.secondary, fontSize: typography.base, textAlign: 'center' },
+  scroll: { flex: 1, backgroundColor: colors.bg.primary },
+  container: { padding: spacing.lg, paddingBottom: spacing['2xl'] },
+  centered: { flex: 1, backgroundColor: colors.bg.primary, justifyContent: 'center', alignItems: 'center' },
+  heading: { color: colors.text.primary, fontSize: typography['2xl'], fontWeight: '700', marginBottom: spacing.lg },
+  planCard: { backgroundColor: colors.bg.secondary, borderRadius: 16, padding: spacing.lg, marginBottom: spacing.lg, borderWidth: 1, borderColor: colors.border },
+  dayLabel: { color: colors.brand.secondary, fontSize: typography.xl, fontWeight: '700', marginBottom: spacing.md },
+  exRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border },
+  exName: { color: colors.text.primary, fontSize: typography.base },
+  exMeta: { color: colors.text.muted, fontSize: typography.sm },
+  btn: { backgroundColor: colors.brand.primary, borderRadius: 12, paddingVertical: spacing.md, alignItems: 'center', marginTop: spacing.lg },
+  btnOff: { opacity: 0.5 },
+  btnText: { color: '#fff', fontSize: typography.base, fontWeight: '700' },
+  emptyCard: { backgroundColor: colors.bg.secondary, borderRadius: 16, padding: spacing.lg, marginBottom: spacing.lg, borderWidth: 1, borderColor: colors.border },
+  emptyTitle: { color: colors.text.primary, fontSize: typography.lg, fontWeight: '700', marginBottom: spacing.xs },
+  emptyBody: { color: colors.text.secondary, fontSize: typography.sm, lineHeight: 20, marginBottom: spacing.md },
+  linksRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.lg },
+  link: { color: colors.brand.primary, fontSize: typography.sm, fontWeight: '600' },
+  sectionTitle: { color: colors.text.secondary, fontSize: typography.sm, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: spacing.sm },
+  sessionCard: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: colors.bg.secondary, borderRadius: 12, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
+  sessionDate: { color: colors.text.primary, fontSize: typography.sm, fontWeight: '600' },
+  sessionVol: { color: colors.text.secondary, fontSize: typography.xs, marginTop: 2 },
+  sessionRight: { alignItems: 'flex-end' },
+  sessionDur: { color: colors.text.muted, fontSize: typography.xs },
+  sessionXp: { color: colors.brand.accent, fontSize: typography.xs, fontWeight: '600' },
 });
