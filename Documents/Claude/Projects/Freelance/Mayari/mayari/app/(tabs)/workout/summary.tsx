@@ -4,10 +4,21 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../stores/authStore';
+import { fallbackExercises } from '../../../constants/exercises';
 import { colors, typography, spacing } from '../../../constants/theme';
-import type { WorkoutSession, WorkoutSet, PersonalRecord } from '../../../types/database';
+import type { WorkoutSession, WorkoutSet, PersonalRecord, Exercise } from '../../../types/database';
 
 interface NewPR { exercise_name: string; weight_kg: number; reps: number; }
+
+interface PRUpsert {
+  user_id: string;
+  exercise_id: string;
+  exercise_name: string;
+  weight_kg: number;
+  reps: number;
+  achieved_at: string;
+  muscle_group: Exercise['muscle_group'];
+}
 
 function formatDuration(start: string, end: string): string {
   const totalMin = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
@@ -42,6 +53,21 @@ export default function SummaryScreen() {
         const allSets = (setData ?? []) as WorkoutSet[];
         setSets(allSets);
 
+        // Build exercise_id → muscle_group map: DB first, fallback constants for seed exercises
+        const exerciseIds = [...new Set(allSets.map(s => s.exercise_id))];
+        const { data: exData } = await supabase
+          .from('exercises')
+          .select('id, muscle_group')
+          .in('id', exerciseIds);
+
+        const muscleMap = new Map<string, Exercise['muscle_group']>();
+        for (const ex of (exData ?? [])) {
+          muscleMap.set(ex.id, ex.muscle_group as Exercise['muscle_group']);
+        }
+        for (const fb of fallbackExercises) {
+          if (!muscleMap.has(fb.id)) muscleMap.set(fb.id, fb.muscle_group);
+        }
+
         const existingPRs = (prData ?? []) as PersonalRecord[];
         const prMap = new Map(existingPRs.map(pr => [pr.exercise_id, pr]));
 
@@ -53,7 +79,7 @@ export default function SummaryScreen() {
         }
 
         const detected: NewPR[] = [];
-        const upserts: object[] = [];
+        const upserts: PRUpsert[] = [];
 
         for (const [exId, exSets] of byExercise) {
           const best = exSets.reduce((a, b) =>
@@ -67,18 +93,22 @@ export default function SummaryScreen() {
           if (isNew) {
             detected.push({ exercise_name: best.exercise_name, weight_kg: best.weight_kg, reps: best.reps });
             upserts.push({
-              user_id: userId,
+              user_id: userId!,
               exercise_id: exId,
               exercise_name: best.exercise_name,
               weight_kg: best.weight_kg,
               reps: best.reps,
               achieved_at: new Date().toISOString(),
+              muscle_group: muscleMap.get(exId) ?? 'push',
             });
           }
         }
 
         if (upserts.length > 0) {
-          await supabase.from('personal_records').upsert(upserts, { onConflict: 'user_id,exercise_id' });
+          const { error: upsertError } = await supabase
+            .from('personal_records')
+            .upsert(upserts, { onConflict: 'user_id,exercise_id' });
+          if (upsertError) throw upsertError;
           await queryClient.invalidateQueries({ queryKey: ['personal_records'] });
         }
 

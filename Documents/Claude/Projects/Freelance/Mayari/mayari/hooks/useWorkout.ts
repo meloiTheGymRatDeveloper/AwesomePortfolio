@@ -67,6 +67,24 @@ export function useExerciseById(id: string) {
   });
 }
 
+export function useWorkoutSessionCount() {
+  const userId = useAuthStore(s => s.session?.user.id);
+  return useQuery({
+    queryKey: ['workout_sessions', 'count', userId],
+    queryFn: async () => {
+      if (!userId) return 0;
+      const { count, error } = await supabase
+        .from('workout_sessions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .not('ended_at', 'is', null);
+      if (error) throw error;
+      return count ?? 0;
+    },
+    enabled: !!userId,
+  });
+}
+
 export function usePersonalRecords() {
   const userId = useAuthStore(s => s.session?.user.id);
   return useQuery({

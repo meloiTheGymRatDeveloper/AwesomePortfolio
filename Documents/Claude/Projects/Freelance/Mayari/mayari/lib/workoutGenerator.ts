@@ -140,11 +140,12 @@ export async function generateWorkoutPlan(
   }
 
   // Deactivate previous active plan
-  await supabase
+  const { error: deactivateError } = await supabase
     .from('workout_plans')
     .update({ is_active: false })
     .eq('user_id', userId)
     .eq('is_active', true);
+  if (deactivateError) throw new Error(deactivateError.message);
 
   const { data, error } = await supabase
     .from('workout_plans')

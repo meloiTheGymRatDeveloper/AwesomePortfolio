@@ -5,7 +5,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { colors, typography, spacing } from '../../../constants/theme';
-import { useActivePlan, useRecentSessions } from '../../../hooks/useWorkout';
+import { useActivePlan, useRecentSessions, useWorkoutSessionCount } from '../../../hooks/useWorkout';
 import { useWorkoutStore } from '../../../stores/workoutStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { supabase } from '../../../lib/supabase';
@@ -44,6 +44,7 @@ export default function WorkoutScreen() {
   const queryClient = useQueryClient();
   const { data: activePlan, isLoading: planLoading } = useActivePlan();
   const { data: recentSessions = [] } = useRecentSessions(3);
+  const { data: sessionCount = 0 } = useWorkoutSessionCount();
   const { startSession } = useWorkoutStore();
   const userId = useAuthStore(s => s.session?.user.id);
   const profile = useAuthStore(s => s.profile);
@@ -51,7 +52,7 @@ export default function WorkoutScreen() {
   const [generating, setGenerating] = useState(false);
 
   const todayPlan: DayPlan | null = activePlan
-    ? (activePlan.plan_data.days[recentSessions.length % activePlan.plan_data.days.length] ?? null)
+    ? (activePlan.plan_data.days[sessionCount % activePlan.plan_data.days.length] ?? null)
     : null;
 
   const handleStart = useCallback(async () => {
@@ -139,7 +140,7 @@ export default function WorkoutScreen() {
         <TouchableOpacity onPress={() => router.push('/(tabs)/workout/records')}>
           <Text style={styles.link}>Personal Records</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/(tabs)/workout/exercise')}>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/workout/exercise/index')}>
           <Text style={styles.link}>Exercise Library</Text>
         </TouchableOpacity>
       </View>
